@@ -314,7 +314,30 @@ def load_calculation():
 	print(len(CanRxInt))
 	print(len(CanErrorInt))
 
-	#for i in range(0, len(Tasks)-1)
+	# Data Initializations for CPU load calculation
+	AccPercentage = 0
+    AccPercentageNoISR = 0
+    AccISRsPercentage = 0
+
+	CurrentRow = 0
+	TaskTimeError = 0
+	while ((CurrentRow < len(Tasks)) and (TaskTimeError == 0)):
+		StartTime = Task[CurrentRow][0]
+		CurrentTime = StartTime
+        # Init variables for CPU load calculation if current Window
+        IdleTaskMeasuring = 0
+        IdleTaskAcummulatedTime = 0
+        FuncAllAccTime = 0
+        TaskTimeError = 0
+
+		while ((CurrentTime <= (StartTime + TimeWindow)) and (TaskTimeError = 0)):
+			NoCPUusageTask = 0
+			if(Task[CurrentRow][1] in BCTaskID):
+				NoCPUusageTask = 1
+			if()
+
+
+
 
 	# insertLoad(taskRank(400,89,98),rank_load)
 
