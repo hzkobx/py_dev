@@ -37,7 +37,23 @@ initISRRank = ISRRank(0,0)
 rank_load = [initTaskRank]
 rank_isr = [initISRRank]
 
+#
+#	Supportive Functions
+#
+def getLoad(item):
+	return item.load
 
+def insertLoad(item, list):
+	list.append(item)
+
+	list.sort(key=getLoad,reverse=True)
+	if(len(list) > ResultsSlots):
+		del list[ResultsSlots]
+
+
+#
+#	Function used to load data from CSV file to global variables
+#
 def loadCSVFiles(fileName):
 	global Tasks
 	global ISRs
@@ -294,18 +310,15 @@ def loadCSVFiles(fileName):
 				j = j + 1
 
 
-def getLoad(item):
-	return item.load
+#
+#	Calculate ISR load during IDLE tasks
+#
+def ProcessISRfunctions(taskIdleStartTime, taskIdleEndTime):
 
-def insertLoad(item, list):
-	list.append(item)
 
-	list.sort(key=getLoad,reverse=True)
-	if(len(list) > ResultsSlots):
-		del list[ResultsSlots]
-
-#def ProcessISRfunctions(taskIdleStartTime, taskIdleEndTime, )
-
+#
+#	Calculate Tasks load
+#
 def load_calculation():
 	print(len(Tasks))
 	print(len(ISRs))
@@ -316,25 +329,46 @@ def load_calculation():
 
 	# Data Initializations for CPU load calculation
 	AccPercentage = 0
-    AccPercentageNoISR = 0
-    AccISRsPercentage = 0
+	AccPercentageNoISR = 0
+	AccISRsPercentage = 0
 
 	CurrentRow = 0
 	TaskTimeError = 0
+
+	# Continue if end of the Task list is not reached
+	# Find the duration of the idle / background Task
+	# Start from row 0, calculate the CPU load for each window
 	while ((CurrentRow < len(Tasks)) and (TaskTimeError == 0)):
 		StartTime = Task[CurrentRow][0]
+		# CurrentTime is the first element of current task
 		CurrentTime = StartTime
-        # Init variables for CPU load calculation if current Window
-        IdleTaskMeasuring = 0
-        IdleTaskAcummulatedTime = 0
-        FuncAllAccTime = 0
-        TaskTimeError = 0
+		# CurrentID is the second element of current task
+		CurrentID = Task[CurrentRow][1]
+		# Init variables for CPU load calculation if current Window
+		IdleTaskMeasuring = 0
+		IdleTaskAcummulatedTime = 0
+		FuncAllAccTime = 0
+		TaskTimeError = 0
 
-		while ((CurrentTime <= (StartTime + TimeWindow)) and (TaskTimeError = 0)):
+		# Analyze the tasks within TimeWindow from the first selected row
+		while ((CurrentTime <= (StartTime + TimeWindow)) and (TaskTimeError == 0)):
 			NoCPUusageTask = 0
-			if(Task[CurrentRow][1] in BCTaskID):
-				NoCPUusageTask = 1
-			if()
+			# If this is the start of IDLE/BG tasks
+			# Mark IdleTaskMeasuring to be TRUE to start Idle measuring
+			if((CurrentID in BCTaskID) or (CurrentID == IdleTaskId)) and (IdleTaskMeasuring == 0):
+				IdleTaskMeasuring = 1
+				IdleTaskStartTime = CurrentTime
+			elif(IdleTaskMeasuring == 0):
+				# If previous and current are NOT IDLE/BG tasks, do nothing
+			else:
+				# Meet the end of IDLE/BG tasks, stop IDLE measurement
+				IdleTaskMeasuring = 0
+				IdleTaskEndTime = CurrentTime
+				# Accumulate IDLE time
+				IdleTaskAcummulatedTime += IdleTaskEndTime - IdleTaskStartTime
+
+				#
+
 
 
 
